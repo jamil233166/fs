@@ -1,0 +1,649 @@
+================================================================================
+                        CPU SCHEDULING ALGORITHMS
+================================================================================
+
+================================================================================
+1. FCFS WITHOUT ARRIVAL TIME (FCFS_without_arrival.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i;
+    int bt[MAX], wt[MAX], tat[MAX];
+    float awt = 0, atat = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i];
+    }
+
+    wt[0] = 0;
+
+    for(i = 1; i < n; i++) {
+        wt[i] = wt[i-1] + bt[i-1];
+    }
+
+    for(i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i];
+    }
+
+    cout << "\nProcess\tBT\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        awt += wt[i];
+        atat += tat[i];
+        cout << "P" << i+1 << "\t" << bt[i]
+             << "\t" << wt[i]
+             << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage WT: " << awt/n;
+    cout << "\nAverage TAT: " << atat/n;
+
+    // Gantt Chart
+    cout << "\n\nGantt Chart:\n";
+    cout << "0";
+    int time = 0;
+    for(i = 0; i < n; i++) {
+        time += bt[i];
+        cout << " | P" << i+1 << " | " << time;
+    }
+
+    return 0;
+}
+
+
+================================================================================
+2. FCFS WITH ARRIVAL TIME (FCFS_with_Arrival.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i, j, temp;
+    int bt[MAX], at[MAX], wt[MAX], tat[MAX], p[MAX];
+    float awt = 0, atat = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time and Arrival Time:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i] >> at[i];
+        p[i] = i + 1;
+    }
+
+    for(i = 0; i < n-1; i++) {
+        for(j = i+1; j < n; j++) {
+            if(at[i] > at[j]) {
+                swap(at[i], at[j]);
+                swap(bt[i], bt[j]);
+                swap(p[i], p[j]);
+            }
+        }
+    }
+
+    wt[0] = 0;
+
+    for(i = 1; i < n; i++) {
+        wt[i] = wt[i-1] + bt[i-1];
+
+        if(wt[i] < at[i]) {
+            wt[i] = at[i];
+        }
+    }
+
+    for(i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i] - at[i];
+    }
+
+    cout << "\nProcess\tBT\tAT\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        awt += wt[i];
+        atat += tat[i];
+        cout << "P" << p[i] << "\t" << bt[i] << "\t"
+             << at[i] << "\t" << wt[i] << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage WT: " << awt/n;
+    cout << "\nAverage TAT: " << atat/n;
+
+    cout << "\n\nGantt Chart:\n";
+
+    int time = at[0];
+    cout << time;
+
+    for(i = 0; i < n; i++) {
+        time += bt[i];
+        cout << " | P" << p[i] << " | " << time;
+    }
+
+    return 0;
+}
+
+
+================================================================================
+3. SJF WITHOUT ARRIVAL TIME (SJF.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i, j, temp;
+    int bt[MAX], wt[MAX], tat[MAX];
+
+    float awt = 0, atat = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i];
+    }
+
+    for(i = 0; i < n - 1; i++) {
+        for(j = i + 1; j < n; j++) {
+            if(bt[i] > bt[j]) {
+                temp = bt[i];
+                bt[i] = bt[j];
+                bt[j] = temp;
+            }
+        }
+    }
+
+    wt[0] = 0;
+    for(i = 1; i < n; i++) {
+        wt[i] = wt[i-1] + bt[i-1];
+    }
+
+    for(i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i];
+    }
+
+    cout << "\nProcess\tBT\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        awt += wt[i];
+        atat += tat[i];
+        cout << "P" << i+1 << "\t" << bt[i]
+             << "\t" << wt[i]
+             << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << awt/n;
+    cout << "\nAverage Turnaround Time: " << atat/n;
+
+    cout << "\n\nGantt Chart:\n";
+
+    for(i = 0; i < n; i++) cout << "--------";
+    cout << "\n|";
+
+    for(i = 0; i < n; i++)
+        cout << "  P" << i+1 << "  |";
+
+    cout << "\n";
+    for(i = 0; i < n; i++) cout << "--------";
+
+    cout << "\n0";
+    int time = 0;
+    for(i = 0; i < n; i++) {
+        time += bt[i];
+        cout << "      " << time;
+    }
+
+    cout << "\n";
+
+    return 0;
+}
+
+
+================================================================================
+4. SJF WITH ARRIVAL TIME (sjf_arrival.cpp)
+================================================================================
+
+//SJF
+#include<iostream>
+using namespace std;
+
+#define max 30
+
+int main() {
+ int n,i;
+ int bt[max],at[max],wt[max],tat[max];
+ int completed[max]={0};
+ int time=0,count=0;
+ float awt=0,atat=0;
+
+ int gantt_p[max],gantt_t[max];
+ int g=0;
+
+ cout<<"enter num of processes: ";
+ cin>>n;
+
+ cout<<"Enter Burst time and Arrival Time: ";
+ for(int i=0;i<n;i++){
+    cin>>bt[i]>>at[i];
+ }
+
+ while(count<n)
+{
+    int min_bt=9999;
+    int min_index=-1;
+
+    for(i=0;i<n;i++){
+        if(at[i]<=time && completed[i]==0){
+            if(bt[i]<min_bt){
+                min_bt= bt[i];
+                min_index=i;
+            }
+        }
+    }
+    if(min_index ==-1){
+        time++;
+    }
+    else{
+      wt[min_index] = time -at[min_index];
+      time +=bt[min_index];
+      tat[min_index]=wt[min_index]+bt[min_index];
+
+      completed[min_index]=1;
+
+      gantt_p[g]=min_index;
+      gantt_t[g]=time;
+      g++;
+
+      count++;
+    }
+}
+cout<<"\nProcess\tburst Time\tArrival Time\tWaiting Time\tTurn Around Time\n";
+for(i=0;i<n;i++){
+    awt+=wt[i];
+    atat+=tat[i];
+    cout<<"P"<<i+1<<"\t"<<bt[i]<<"\t\t"<<at[i]<<"\t\t"<<wt[i]<<"\t\t"<<tat[i]<<"\n";
+}
+
+cout<<"\nAvg waiting time: "<<awt/n;
+cout<<"\nAvg Turnaround Time: "<<atat/n;
+
+cout<<"\n\nGantt Chart: \n";
+for(int i=0;i<g;i++)cout<<"--------";
+cout<<"\n|";
+
+for(i=0;i<g;i++)cout<<" P"<<gantt_p[i]+1<<" |";
+
+cout<<"\n";
+for(i=0;i<g;i++)cout<<"--------";
+
+cout<<"\n0";
+for(i=0;i<g;i++)cout<<"--------";
+
+cout<<"\n0";
+for(i=0;i<g;i++)cout<<"    "<<gantt_t[i];
+
+cout<<"\n";
+}
+
+
+================================================================================
+5. SRTF WITHOUT ARRIVAL TIME (SRTF_without_Arrival.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i, time = 0, count = 0;
+    int bt[MAX], rt[MAX];
+    int wt[MAX], tat[MAX];
+
+    float awt = 0, atat = 0;
+
+    int gantt[MAX * 10], g = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i];
+        rt[i] = bt[i];
+    }
+
+    while(count < n) {
+        int min_rt = 9999, min_index = -1;
+
+        // Find shortest remaining time
+        for(i = 0; i < n; i++) {
+            if(rt[i] > 0) {
+                if(rt[i] < min_rt) {
+                    min_rt = rt[i];
+                    min_index = i;
+                }
+            }
+        }
+
+        rt[min_index]--;
+        gantt[g++] = min_index;
+        time++;
+
+        if(rt[min_index] == 0) {
+            count++;
+            tat[min_index] = time;
+            wt[min_index] = tat[min_index] - bt[min_index];
+
+            awt += wt[min_index];
+            atat += tat[min_index];
+        }
+    }
+
+    cout << "\nProcess\tBT\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t" << bt[i]
+             << "\t" << wt[i] << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage WT: " << awt/n;
+    cout << "\nAverage TAT: " << atat/n;
+
+    return 0;
+}
+
+
+================================================================================
+6. SRTF WITH ARRIVAL TIME (SRTF_with_arrival.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i, time = 0, count = 0;
+    int bt[MAX], at[MAX], rt[MAX];
+    int wt[MAX], tat[MAX];
+
+    float awt = 0, atat = 0;
+
+    int gantt[MAX * 10], g = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time and Arrival Time:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i] >> at[i];
+        rt[i] = bt[i];
+    }
+
+    while(count < n) {
+        int min_rt = 9999, min_index = -1;
+
+        for(i = 0; i < n; i++) {
+            if(at[i] <= time && rt[i] > 0) {
+                if(rt[i] < min_rt) {
+                    min_rt = rt[i];
+                    min_index = i;
+                }
+            }
+        }
+
+        if(min_index == -1) {
+            gantt[g++] = -1;
+            time++;
+        } else {
+            rt[min_index]--;
+            gantt[g++] = min_index;
+            time++;
+
+            if(rt[min_index] == 0) {
+                count++;
+                tat[min_index] = time - at[min_index];
+                wt[min_index] = tat[min_index] - bt[min_index];
+
+                awt += wt[min_index];
+                atat += tat[min_index];
+            }
+        }
+    }
+
+    cout << "\nProcess\tBT\tAT\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t" << bt[i] << "\t" << at[i]
+             << "\t" << wt[i] << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage WT: " << awt/n;
+    cout << "\nAverage TAT: " << atat/n;
+
+    cout << "\n\nGantt Chart:\n|";
+    for(i = 0; i < g; i++) {
+        if(gantt[i] == -1)
+            cout << " idle |";
+        else
+            cout << " P" << gantt[i]+1 << " |";
+    }
+
+    cout << "\n0";
+    for(i = 1; i <= g; i++) {
+        cout << "   " << i;
+    }
+
+    return 0;
+}
+
+
+================================================================================
+7. PRIORITY SCHEDULING NON-PREEMPTIVE (Priority.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i;
+    int bt[MAX], at[MAX], pr[MAX];
+    int wt[MAX], tat[MAX];
+    int completed[MAX] = {0};
+
+    int time = 0, count = 0;
+    float awt = 0, atat = 0;
+
+    int gantt_p[MAX];
+    int gantt_t[MAX];
+    int g = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time, Arrival Time & Priority:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i] >> at[i] >> pr[i];
+    }
+
+    while(count < n) {
+        int min_pr = 9999;
+        int min_index = -1;
+
+        for(i = 0; i < n; i++) {
+            if(at[i] <= time && completed[i] == 0) {
+                if(pr[i] < min_pr) {
+                    min_pr = pr[i];
+                    min_index = i;
+                }
+            }
+        }
+
+        if(min_index == -1) {
+            time++;
+        } else {
+            wt[min_index] = time - at[min_index];
+            time += bt[min_index];
+            tat[min_index] = wt[min_index] + bt[min_index];
+
+            completed[min_index] = 1;
+
+            gantt_p[g] = min_index;
+            gantt_t[g] = time;
+            g++;
+
+            count++;
+        }
+    }
+
+    cout << "\nProcess\tBT\tAT\tPR\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        awt += wt[i];
+        atat += tat[i];
+        cout << "P" << i+1 << "\t" << bt[i] << "\t" << at[i] << "\t"
+             << pr[i] << "\t" << wt[i] << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << awt/n;
+    cout << "\nAverage Turnaround Time: " << atat/n;
+
+    cout << "\n\nGantt Chart:\n";
+
+    for(i = 0; i < g; i++) {
+        cout << "--------";
+    }
+    cout << "\n|";
+    for(i = 0; i < g; i++) {
+        cout << "  P" << gantt_p[i]+1 << "  |";
+    }
+
+    cout << "\n";
+    for(i = 0; i < g; i++) {
+        cout << "--------";
+    }
+    cout << "\n";
+
+    int prev = 0;
+    cout << prev;
+    for(i = 0; i < g; i++) {
+        cout << "      " << gantt_t[i];
+    }
+    cout << "\n";
+
+    return 0;
+}
+
+
+================================================================================
+8. PRIORITY SCHEDULING PREEMPTIVE (Priority_premitive.cpp)
+================================================================================
+
+#include<iostream>
+using namespace std;
+
+#define MAX 30
+
+int main() {
+    int n, i, time = 0, count = 0;
+    int bt[MAX], at[MAX], pr[MAX];
+    int rt[MAX], wt[MAX], tat[MAX];
+    int completed[MAX] = {0};
+
+    float awt = 0, atat = 0;
+
+    // Gantt chart (stores process at each time unit)
+    int gantt[MAX * 10];
+    int g = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter Burst Time, Arrival Time, Priority:\n";
+    for(i = 0; i < n; i++) {
+        cin >> bt[i] >> at[i] >> pr[i];
+        rt[i] = bt[i]; // remaining time
+    }
+
+    while(count < n) {
+        int min_pr = 9999;
+        int min_index = -1;
+
+        // Find highest priority process at current time
+        for(i = 0; i < n; i++) {
+            if(at[i] <= time && rt[i] > 0) {
+                if(pr[i] < min_pr) {
+                    min_pr = pr[i];
+                    min_index = i;
+                }
+            }
+        }
+
+        if(min_index == -1) {
+            gantt[g++] = -1; // idle
+            time++;
+        } else {
+            // Execute for 1 unit (preemptive)
+            rt[min_index]--;
+            gantt[g++] = min_index;
+            time++;
+
+            // If finished
+            if(rt[min_index] == 0) {
+                completed[min_index] = 1;
+                count++;
+
+                tat[min_index] = time - at[min_index];
+                wt[min_index] = tat[min_index] - bt[min_index];
+
+                awt += wt[min_index];
+                atat += tat[min_index];
+            }
+        }
+    }
+
+    // Output Table
+    cout << "\nProcess\tBT\tAT\tPR\tWT\tTAT\n";
+    for(i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t" << bt[i] << "\t" << at[i]
+             << "\t" << pr[i] << "\t" << wt[i]
+             << "\t" << tat[i] << "\n";
+    }
+
+    cout << "\nAverage WT: " << awt/n;
+    cout << "\nAverage TAT: " << atat/n;
+
+    // Gantt Chart
+    cout << "\n\nGantt Chart:\n|";
+
+    for(i = 0; i < g; i++) {
+        if(gantt[i] == -1)
+            cout << " idle |";
+        else
+            cout << " P" << gantt[i]+1 << " |";
+    }
+
+    cout << "\n0";
+    for(i = 1; i <= g; i++) {
+        cout << "   " << i;
+    }
+
+    cout << "\n";
+
+    return 0;
+}
+
+
+================================================================================
+                              END OF FILE
+================================================================================
